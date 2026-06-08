@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rebecca Llopis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #080808;
+      --white:  #F4F2EE;
+      --gold:   #C9A84C;
+      --gold-light: #E2C97E;
+      --muted:  #6B6B6B;
+      --border: #1E1E1E;
+      --nav-h:  72px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+    /* ─── NAVIGATION ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      background: var(--black);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: background 0.3s;
+    }
+    nav.scrolled { background: rgba(8,8,8,0.97); backdrop-filter: blur(8px); }
+
+    .nav-logo {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-logo img { height: 38px; width: auto; filter: brightness(1); transition: opacity 0.2s; }
+    .nav-logo img:hover { opacity: 0.75; }
+
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+    /* ─── HAMBURGER ─── */
+    .nav-burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+      z-index: 110;
+    }
+    .nav-burger span {
+      display: block;
+      width: 24px; height: 1px;
+      background: var(--white);
+      transition: transform 0.3s, opacity 0.3s, width 0.3s;
+      transform-origin: center;
+    }
+    .nav-burger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-burger.open span:nth-child(2) { opacity: 0; width: 0; }
+    .nav-burger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed; inset: 0;
+      background: var(--black);
+      z-index: 105;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .mobile-menu.open { opacity: 1; }
+    .mobile-menu a {
+      font-family: 'Playfair Display', serif;
+      font-size: 40px;
+      font-weight: 400;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-menu-social { display: flex; gap: 28px; margin-top: 20px; }
+    .mobile-menu-social a {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* ─── PAGE CONTAINER ─── */
+    .page { display: none; min-height: 100vh; padding-top: var(--nav-h); }
+    .page.active { display: block; }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 80px;
+    }
+    .footer-links { display: flex; gap: 32px; }
+    .footer-links a {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-copy { font-size: 11px; letter-spacing: 0.1em; color: #333; }
+
+    /* ─── GOLD DIVIDER ─── */
+    .divider { width: 48px; height: 1px; background: var(--gold); margin: 24px 0; }
+
+    /* ═══════════════════════════════════════
+       HOME PAGE
+    ═══════════════════════════════════════ */
+    #home { padding-top: 0; position: relative; }
+
+    .home-hero {
+      position: relative;
+      width: 100%; height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+    }
+    .home-hero-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: brightness(0.72);
+    }
+    .home-hero-placeholder {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, #111 0%, #0a0a0a 60%, #0d0d0d 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    }
+    .home-hero-placeholder span { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #333; }
+    .home-hero-placeholder .ph-icon { width: 48px; height: 48px; border: 1px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #333; font-size: 20px; }
+
+    .home-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(8,8,8,0.92) 0%, rgba(8,8,8,0.35) 45%, rgba(8,8,8,0.08) 100%);
+    }
+    .home-hero-content {
+      position: relative; z-index: 2;
+      padding: 0 64px 72px;
+      max-width: 700px;
+    }
+    .home-eyebrow {
+      font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 400;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+      opacity: 0; animation: heroFadeUp 0.8s ease 0.2s forwards;
+    }
+    .home-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(52px, 7vw, 88px); font-weight: 400; line-height: 1.02; color: var(--white); margin-bottom: 24px;
+      opacity: 0; animation: heroFadeUp 0.8s ease 0.45s forwards;
+    }
+    .home-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(16px, 2vw, 20px); font-weight: 300; font-style: italic;
+      color: rgba(244,242,238,0.65); letter-spacing: 0.06em; line-height: 1.5;
+      opacity: 0; animation: heroFadeUp 0.8s ease 0.65s forwards;
+    }
+    .home-cta {
+      margin-top: 40px; display: inline-flex; align-items: center; gap: 12px;
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); cursor: pointer; text-decoration: none; transition: gap 0.3s;
+      opacity: 0; animation: heroFadeUp 0.8s ease 0.85s forwards;
+    }
+    .home-cta:hover { gap: 18px; }
+    .home-cta .arrow { font-size: 16px; }
+
+    @keyframes heroFadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .scroll-indicator {
+      position: absolute; bottom: 32px; right: 48px; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .scroll-indicator span { font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(244,242,238,0.3); writing-mode: vertical-rl; }
+    .scroll-line { width: 1px; height: 48px; background: linear-gradient(to bottom, transparent, var(--gold)); animation: scrollPulse 2s ease-in-out infinite; }
+    @keyframes scrollPulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+    .home-disciplines {
+      display: flex; align-items: center; justify-content: center; gap: 0;
+      padding: 48px 48px; border-bottom: 1px solid var(--border);
+    }
+    .discipline-item { display: flex; align-items: center; flex: 1; justify-content: center; }
+    .discipline-label {
+      font-family: 'Playfair Display', serif; font-size: clamp(13px, 1.5vw, 17px);
+      font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); text-align: center; transition: color 0.3s; cursor: default;
+    }
+    .discipline-label:hover { color: var(--gold); }
+    .discipline-sep { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+
+    /* ═══════════════════════════════════════
+       ABOUT PAGE
+    ═══════════════════════════════════════ */
+    .about-header { padding: 72px 48px 48px; border-bottom: 1px solid var(--border); }
+    .page-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    .page-title { font-family: 'Playfair Display', serif; font-size: clamp(36px, 5vw, 64px); font-weight: 400; line-height: 1.1; }
+
+    .about-body {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+      padding: 72px 48px; border-bottom: 1px solid var(--border);
+    }
+    .about-left { padding-right: 64px; border-right: 1px solid var(--border); }
+    .about-bio { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; line-height: 1.75; color: rgba(244,242,238,0.9); }
+    .about-bio p + p { margin-top: 28px; }
+    .about-bio .highlight { color: var(--gold); font-style: italic; }
+    .about-right { padding-left: 64px; display: flex; flex-direction: column; gap: 48px; }
+    .about-section-title { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .credential-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+    .credential-list li { display: flex; gap: 16px; align-items: flex-start; }
+    .cred-year { font-size: 11px; color: var(--gold); letter-spacing: 0.05em; width: 40px; flex-shrink: 0; padding-top: 2px; }
+    .cred-text { font-size: 14px; line-height: 1.5; color: rgba(244,242,238,0.75); }
+    .cred-text strong { display: block; font-weight: 500; color: var(--white); font-size: 15px; }
+    .resume-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 14px 28px; border: 1px solid var(--gold); color: var(--gold);
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      text-decoration: none; cursor: pointer; background: transparent;
+      transition: background 0.25s, color 0.25s; width: fit-content;
+    }
+    .resume-btn:hover { background: var(--gold); color: var(--black); }
+
+    /* ─── SKILLS STRIP ─── */
+    .skills-strip { padding: 64px 48px; border-bottom: 1px solid var(--border); }
+    .skills-strip .about-section-title { margin-bottom: 36px; }
+    .skills-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .skill-tag {
+      padding: 8px 20px; border: 1px solid var(--border);
+      font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--muted); transition: border-color 0.2s, color 0.2s;
+    }
+    .skill-tag:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ═══════════════════════════════════════
+       FILM PAGE
+    ═══════════════════════════════════════ */
+    .film-header { padding: 72px 48px 48px; border-bottom: 1px solid var(--border); }
+    .film-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); padding: 0 48px; }
+    .film-tab {
+      padding: 20px 32px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s; user-select: none;
+    }
+    .film-tab:hover { color: var(--white); }
+    .film-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    .film-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+    .film-card {
+      background: var(--black); padding: 40px 36px; cursor: pointer;
+      transition: background 0.2s; position: relative; overflow: hidden;
+    }
+    .film-card::before {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 0; height: 2px; background: var(--gold); transition: width 0.35s ease;
+    }
+    .film-card:hover { background: #0f0f0f; }
+    .film-card:hover::before { width: 100%; }
+    .film-card-cat { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    .film-card-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; line-height: 1.2; margin-bottom: 8px; }
+    .film-card-role { font-size: 12px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 20px; }
+    .film-card-desc { font-size: 13px; line-height: 1.7; color: rgba(244,242,238,0.55); }
+    .film-card-year { margin-top: 24px; font-size: 11px; color: #333; letter-spacing: 0.1em; }
+    .film-card-more {
+      margin-top: 20px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); opacity: 0; transition: opacity 0.2s;
+    }
+    .film-card:hover .film-card-more { opacity: 1; }
+
+    /* ─── FILM MODAL ─── */
+    .film-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 200;
+      display: none; align-items: center; justify-content: center; padding: 40px;
+      backdrop-filter: blur(4px);
+    }
+    .film-modal-overlay.open { display: flex; animation: fadeIn 0.25s ease; }
+    .film-modal {
+      background: #0d0d0d; border: 1px solid var(--border);
+      max-width: 640px; width: 100%; padding: 56px 56px 48px;
+      position: relative; animation: modalSlide 0.3s ease;
+    }
+    @keyframes modalSlide { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .film-modal-close {
+      position: absolute; top: 24px; right: 28px;
+      font-size: 24px; color: var(--muted); cursor: pointer; line-height: 1; transition: color 0.2s;
+    }
+    .film-modal-close:hover { color: var(--white); }
+    .film-modal-cat { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    .film-modal-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 400; line-height: 1.2; margin-bottom: 8px; }
+    .film-modal-role { font-size: 13px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 32px; }
+    .film-modal-divider { width: 40px; height: 1px; background: var(--gold); margin-bottom: 28px; }
+    .film-modal-body { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 300; line-height: 1.8; color: rgba(244,242,238,0.8); }
+    .film-modal-meta {
+      margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; gap: 40px;
+    }
+    .film-modal-meta-label { font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .film-modal-meta-value { font-size: 14px; color: var(--white); }
+
+    /* ═══════════════════════════════════════
+       BLOG PAGE
+    ═══════════════════════════════════════ */
+    .blog-header { padding: 72px 48px 48px; border-bottom: 1px solid var(--border); }
+    .blog-intro { padding: 64px 48px; max-width: 680px; border-bottom: 1px solid var(--border); }
+    .blog-intro p { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 300; line-height: 1.8; color: rgba(244,242,238,0.8); }
+    .substack-cta {
+      margin-top: 40px; display: inline-flex; align-items: center; gap: 14px;
+      padding: 16px 32px; border: 1px solid var(--gold); color: var(--gold);
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      text-decoration: none; transition: background 0.25s, color 0.25s;
+    }
+    .substack-cta:hover { background: var(--gold); color: var(--black); }
+
+    .blog-posts { padding: 64px 48px; }
+    .blog-post-item {
+      display: grid; grid-template-columns: 80px 1fr auto; gap: 32px;
+      align-items: start; padding: 32px 0; border-bottom: 1px solid var(--border);
+      cursor: pointer; text-decoration: none; transition: padding-left 0.3s;
+    }
+    .blog-post-item:hover { padding-left: 12px; }
+    .blog-post-item:first-child { border-top: 1px solid var(--border); }
+    .blog-post-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 400; color: #1E1E1E; padding-top: 4px; }
+    .blog-post-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; color: var(--white); margin-bottom: 8px; transition: color 0.2s; }
+    .blog-post-item:hover .blog-post-title { color: var(--gold); }
+    .blog-post-excerpt { font-size: 13px; line-height: 1.65; color: var(--muted); }
+    .blog-post-tag {
+      display: inline-block; margin-top: 12px; padding: 4px 12px;
+      border: 1px solid var(--border); font-size: 9px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .blog-post-arrow { font-size: 20px; color: var(--gold); opacity: 0; transition: opacity 0.2s; padding-top: 4px; }
+    .blog-post-item:hover .blog-post-arrow { opacity: 1; }
+
+    /* ═══════════════════════════════════════
+       MISC PAGE
+    ═══════════════════════════════════════ */
+    .misc-header { padding: 72px 48px 48px; border-bottom: 1px solid var(--border); }
+    .misc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); }
+    .misc-card {
+      background: var(--black); padding: 56px 48px;
+      position: relative; overflow: hidden; cursor: pointer; transition: background 0.2s;
+    }
+    .misc-card:hover { background: #0c0c0c; }
+    .misc-card-num {
+      font-family: 'Playfair Display', serif; font-size: 72px; font-weight: 400;
+      color: #141414; position: absolute; top: 24px; right: 36px;
+      line-height: 1; pointer-events: none; transition: color 0.3s;
+    }
+    .misc-card:hover .misc-card-num { color: #1c1c1c; }
+    .misc-card-cat { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .misc-card-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 400; line-height: 1.2; margin-bottom: 16px; }
+    .misc-card-desc { font-size: 14px; line-height: 1.7; color: rgba(244,242,238,0.5); max-width: 380px; }
+    .misc-card-link {
+      margin-top: 28px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); opacity: 0; transform: translateX(-8px);
+      transition: opacity 0.25s, transform 0.25s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .misc-card:hover .misc-card-link { opacity: 1; transform: translateX(0); }
+
+    /* ─── PHOTO GALLERY ─── */
+    .gallery-section { padding: 64px 48px; border-top: 1px solid var(--border); }
+    .gallery-section .about-section-title { margin-bottom: 32px; }
+    .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .photo-item {
+      aspect-ratio: 3/4; background: #111;
+      overflow: hidden; cursor: pointer; position: relative;
+    }
+    .photo-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s ease, filter 0.4s ease;
+      filter: brightness(0.8) grayscale(0.2);
+    }
+    .photo-item:hover img { transform: scale(1.05); filter: brightness(0.95) grayscale(0); }
+    .photo-item-overlay {
+      position: absolute; inset: 0; background: rgba(8,8,8,0);
+      display: flex; align-items: flex-end; padding: 16px; transition: background 0.3s;
+    }
+    .photo-item:hover .photo-item-overlay { background: rgba(8,8,8,0.35); }
+    .photo-item-caption {
+      font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--white);
+      opacity: 0; transform: translateY(8px); transition: opacity 0.3s, transform 0.3s;
+    }
+    .photo-item:hover .photo-item-caption { opacity: 1; transform: translateY(0); }
+    .photo-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #111 0%, #0e0e0e 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #222; flex-direction: column; gap: 8px;
+    }
+
+    /* ─── LIGHTBOX ─── */
+    .lightbox-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 300;
+      display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px);
+    }
+    .lightbox-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+    .lightbox-img { max-width: 80vw; max-height: 80vh; object-fit: contain; animation: modalSlide 0.3s ease; }
+    .lightbox-close { position: absolute; top: 28px; right: 36px; font-size: 28px; color: var(--muted); cursor: pointer; line-height: 1; transition: color 0.2s; }
+    .lightbox-close:hover { color: var(--white); }
+    .lightbox-prev, .lightbox-next {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      font-size: 28px; color: var(--muted); cursor: pointer; transition: color 0.2s; padding: 20px; user-select: none;
+    }
+    .lightbox-prev { left: 16px; }
+    .lightbox-next { right: 16px; }
+    .lightbox-prev:hover, .lightbox-next:hover { color: var(--gold); }
+    .lightbox-caption { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+    .lightbox-counter { position: absolute; top: 36px; left: 48px; font-size: 11px; letter-spacing: 0.15em; color: #333; }
+
+    /* ═══════════════════════════════════════
+       CONTACT PAGE
+    ═══════════════════════════════════════ */
+    .contact-header { padding: 72px 48px 48px; border-bottom: 1px solid var(--border); }
+    .contact-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 72px 48px; }
+    .contact-left { padding-right: 64px; border-right: 1px solid var(--border); }
+    .contact-intro {
+      font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300;
+      line-height: 1.75; color: rgba(244,242,238,0.85); margin-bottom: 48px;
+    }
+    .contact-channels { display: flex; flex-direction: column; gap: 0; }
+    .contact-channel {
+      display: flex; align-items: center; gap: 24px; padding: 24px 0;
+      border-bottom: 1px solid var(--border); text-decoration: none; transition: padding-left 0.3s;
+    }
+    .contact-channel:first-child { border-top: 1px solid var(--border); }
+    .contact-channel:hover { padding-left: 10px; }
+    .contact-channel-icon {
+      width: 40px; height: 40px; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      color: var(--gold); flex-shrink: 0; transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .contact-channel:hover .contact-channel-icon { border-color: var(--gold); background: var(--gold); color: var(--black); }
+    .contact-channel-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .contact-channel-value { font-size: 15px; color: var(--white); }
+
+    .contact-right { padding-left: 64px; }
+    .contact-form { display: flex; flex-direction: column; gap: 28px; }
+    .form-group { display: flex; flex-direction: column; gap: 10px; }
+    .form-label { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
+    .form-input, .form-textarea {
+      background: transparent; border: none; border-bottom: 1px solid var(--border);
+      padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300;
+      color: var(--white); outline: none; transition: border-color 0.2s; width: 100%; resize: none;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #333; }
+    .form-input:focus, .form-textarea:focus { border-bottom-color: var(--gold); }
+    .form-textarea { min-height: 120px; line-height: 1.6; }
+    .form-submit {
+      display: inline-flex; align-items: center; gap: 14px; padding: 16px 36px;
+      background: transparent; border: 1px solid var(--gold); color: var(--gold);
+      font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 0.22em;
+      text-transform: uppercase; cursor: pointer; transition: background 0.25s, color 0.25s; width: fit-content;
+    }
+    .form-submit:hover { background: var(--gold); color: var(--black); }
+    .form-success {
+      display: none; padding: 16px 24px; border: 1px solid #2a2a2a; background: #0f0f0f;
+      font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 300;
+      font-style: italic; color: var(--gold);
+    }
+
+    /* ─── TRANSITIONS ─── */
+    .page { animation: fadeIn 0.4s ease forwards; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .nav-burger { display: flex; }
+
+      .home-hero-content { padding: 0 28px 56px; }
+      .home-disciplines { flex-wrap: wrap; gap: 16px; padding: 32px 24px; }
+      .discipline-sep { display: none; }
+
+      .about-body { grid-template-columns: 1fr; }
+      .about-left { padding-right: 0; border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 56px; margin-bottom: 56px; }
+      .about-right { padding-left: 0; }
+      .about-header, .about-body { padding: 48px 28px 40px; }
+      .skills-strip { padding: 48px 28px; }
+
+      .film-header, .film-tabs { padding-left: 24px; padding-right: 24px; }
+      .film-grid { grid-template-columns: 1fr; }
+      .film-modal { padding: 40px 28px 36px; }
+
+      .blog-header, .blog-intro, .blog-posts { padding-left: 28px; padding-right: 28px; }
+      .blog-post-item { grid-template-columns: 56px 1fr auto; gap: 16px; }
+
+      .misc-header { padding: 48px 28px 40px; }
+      .misc-grid { grid-template-columns: 1fr; }
+      .gallery-section { padding: 48px 28px; }
+      .photo-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .contact-header { padding: 48px 28px 40px; }
+      .contact-body { grid-template-columns: 1fr; padding: 48px 28px; }
+      .contact-left { padding-right: 0; border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 56px; margin-bottom: 56px; }
+      .contact-right { padding-left: 0; }
+
+      footer { flex-direction: column; gap: 20px; padding: 32px 28px; }
+      .footer-links { gap: 20px; flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAVIGATION ─── -->
+<nav id="main-nav">
+  <a class="nav-logo" onclick="navigate('home')" href="#" id="logo-link">
+    <svg width="72" height="32" viewBox="0 0 720 320" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:34px;width:auto">
+      <text x="10"  y="280" font-family="Georgia,serif" font-size="300" font-weight="700" fill="white">R</text>
+      <text x="240" y="280" font-family="Georgia,serif" font-size="300" font-weight="700" fill="white" opacity="0.92">V</text>
+      <text x="470" y="280" font-family="Georgia,serif" font-size="300" font-weight="700" fill="white">L</text>
+      <line x1="340" y1="20" x2="410" y2="300" stroke="white" stroke-width="22" stroke-linecap="round"/>
+      <line x1="250" y1="300" x2="460" y2="20" stroke="black" stroke-width="18" stroke-linecap="round"/>
+    </svg>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="navigate('home')"    id="nav-home"   >Home</a></li>
+    <li><a href="#" onclick="navigate('about')"   id="nav-about"  >About</a></li>
+    <li><a href="#" onclick="navigate('film')"    id="nav-film"   >Film</a></li>
+    <li><a href="#" onclick="navigate('blog')"    id="nav-blog"   >Blog</a></li>
+    <li><a href="#" onclick="navigate('misc')"    id="nav-misc"   >Misc</a></li>
+    <li><a href="#" onclick="navigate('contact')" id="nav-contact">Contact</a></li>
+  </ul>
+  <div class="nav-burger" id="burger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ─── MOBILE MENU ─── -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#" onclick="mobileNavigate('home')">Home</a>
+  <a href="#" onclick="mobileNavigate('about')">About</a>
+  <a href="#" onclick="mobileNavigate('film')">Film</a>
+  <a href="#" onclick="mobileNavigate('blog')">Blog</a>
+  <a href="#" onclick="mobileNavigate('misc')">Misc</a>
+  <a href="#" onclick="mobileNavigate('contact')">Contact</a>
+  <div class="mobile-menu-social">
+    <a href="https://www.instagram.com/rebecca.llopis/" target="_blank">Instagram</a>
+    <a href="https://www.linkedin.com/in/rebecca-llopis/" target="_blank">LinkedIn</a>
+    <a href="mailto:rebeccaterezallopis@gmail.com">Email</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HOME PAGE
+═══════════════════════════════════════ -->
+<section id="home" class="page active">
+  <div class="home-hero">
+    <img class="home-hero-img" src="images/portrait.jpg" alt="Rebecca Llopis"
+         onerror="this.style.display='none'; document.getElementById('hero-placeholder').style.display='flex';" />
+    <div class="home-hero-placeholder" id="hero-placeholder" style="display:none">
+      <div class="ph-icon">◈</div>
+      <span>Add portrait.jpg to /images/</span>
+    </div>
+    <div class="home-hero-overlay"></div>
+    <div class="home-hero-content">
+      <p class="home-eyebrow">Actor · Producer · Director · Writer · Philosopher</p>
+      <h1 class="home-name">Rebecca<br/>Llopis</h1>
+      <p class="home-tagline">Born in Geneva. Raised in Cannes &amp; London.<br/>Telling stories that demand to be felt.</p>
+      <a class="home-cta" onclick="navigate('about')">
+        Discover More <span class="arrow">→</span>
+      </a>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+
+  <div class="home-disciplines">
+    <div class="discipline-item"><span class="discipline-label">Acting</span></div>
+    <div class="discipline-sep"></div>
+    <div class="discipline-item"><span class="discipline-label">Producing</span></div>
+    <div class="discipline-sep"></div>
+    <div class="discipline-item"><span class="discipline-label">Directing</span></div>
+    <div class="discipline-sep"></div>
+    <div class="discipline-item"><span class="discipline-label">Writing</span></div>
+    <div class="discipline-sep"></div>
+    <div class="discipline-item"><span class="discipline-label">Philosophy</span></div>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/rebecca.llopis/" target="_blank">Instagram</a>
+      <a href="https://www.linkedin.com/in/rebecca-llopis/" target="_blank">LinkedIn</a>
+      <a href="mailto:rebeccaterezallopis@gmail.com">Email</a>
+      <a href="tel:+12135074264">+1 (213) 507-4264</a>
+    </div>
+    <span class="footer-copy">© 2026 Rebecca Llopis</span>
+  </footer>
+</section>
+
+<!-- ═══════════════════════════════════════
+     ABOUT PAGE
+═══════════════════════════════════════ -->
+<section id="about" class="page">
+  <div class="about-header">
+    <p class="page-label">About</p>
+    <h1 class="page-title">Rebecca<br/>Llopis</h1>
+  </div>
+
+  <div class="about-body">
+    <div class="about-left">
+      <div class="about-bio">
+        <p class="reveal">
+          Born in <span class="highlight">Geneva</span>, raised between
+          <span class="highlight">Cannes</span> and <span class="highlight">London</span>,
+          and now based in Los Angeles — where I'm pursuing an undergraduate degree at USC.
+        </p>
+        <p class="reveal reveal-delay-1">
+          I am an actor at heart, a creative thinker, entrepreneur, and innovator. My work sits at the intersection of performance, production, and philosophy — driven by a belief that the most powerful stories are those brave enough to explore the unpredictable, multifaceted nature of being human.
+        </p>
+        <p class="reveal reveal-delay-2">
+          From directing theatre productions in London to producing short films at USC's School of Cinematic Arts, to writing and photographing in my own time — I move fluidly across disciplines because I believe the best work emerges from artists who refuse to be contained by a single form.
+        </p>
+        <p class="reveal reveal-delay-3">
+          I'm currently seeking deeper exposure on the <span class="highlight">business and production side of film</span>, connecting artists across industries and developing projects that demand to be told.
+        </p>
+      </div>
+    </div>
+
+    <div class="about-right">
+      <div class="reveal">
+        <p class="about-section-title">Education</p>
+        <ul class="credential-list">
+          <li>
+            <span class="cred-year">Now</span>
+            <div class="cred-text">
+              <strong>University of Southern California</strong>
+              B.A. in Progress — Los Angeles, CA
+            </div>
+          </li>
+          <li>
+            <span class="cred-year">—</span>
+            <div class="cred-text">
+              <strong>London, UK</strong>
+              Theatre Direction &amp; Performance
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="reveal reveal-delay-1">
+        <p class="about-section-title">Disciplines</p>
+        <ul class="credential-list">
+          <li><span class="cred-year">●</span><div class="cred-text"><strong>Acting</strong>Stage &amp; screen performance</div></li>
+          <li><span class="cred-year">●</span><div class="cred-text"><strong>Producing</strong>Short film &amp; theatre production</div></li>
+          <li><span class="cred-year">●</span><div class="cred-text"><strong>Directing</strong>Theatre production, London</div></li>
+          <li><span class="cred-year">●</span><div class="cred-text"><strong>Writing</strong>Essays, philosophy &amp; narrative</div></li>
+          <li><span class="cred-year">●</span><div class="cred-text"><strong>Photography</strong>Personal &amp; editorial</div></li>
+        </ul>
+      </div>
+
+      <div class="reveal reveal-delay-2">
+        <p class="about-section-title">Resume</p>
+        <a href="resume/rebecca-llopis-resume.pdf" class="resume-btn" target="_blank">
+          ↓ &nbsp; Download Resume
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="skills-strip reveal">
+    <p class="about-section-title">Skills &amp; Tools</p>
+    <div class="skills-row">
+      <span class="skill-tag">Script Development</span>
+      <span class="skill-tag">Production Management</span>
+      <span class="skill-tag">Stage Direction</span>
+      <span class="skill-tag">Screen Acting</span>
+      <span class="skill-tag">Creative Writing</span>
+      <span class="skill-tag">Film Theory</span>
+      <span class="skill-tag">Philosophy</span>
+      <span class="skill-tag">Photography</span>
+      <span class="skill-tag">Final Draft</span>
+      <span class="skill-tag">Adobe Creative Suite</span>
+      <span class="skill-tag">French</span>
+      <span class="skill-tag">Spanish</span>
+      <span class="skill-tag">English</span>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/rebecca.llopis/" target="_blank">Instagram</a>
+      <a href="https://www.linkedin.com/in/rebecca-llopis/" target="_blank">LinkedIn</a>
+      <a href="mailto:rebeccaterezallopis@gmail.com">Email</a>
+      <a href="tel:+12135074264">+1 (213) 507-4264</a>
+    </div>
+    <span class="footer-copy">© 2026 Rebecca Llopis</span>
+  </footer>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FILM PAGE
+═══════════════════════════════════════ -->
+<section id="film" class="page">
+  <div class="film-header">
+    <p class="page-label">Film Work</p>
+    <h1 class="page-title">Projects</h1>
+  </div>
+
+  <div class="film-tabs">
+    <div class="film-tab active" data-filter="all"       onclick="filterFilm('all')">All</div>
+    <div class="film-tab"        data-filter="producing" onclick="filterFilm('producing')">Producing</div>
+    <div class="film-tab"        data-filter="acting"    onclick="filterFilm('acting')">Acting</div>
+    <div class="film-tab"        data-filter="writing"   onclick="filterFilm('writing')">Writing</div>
+  </div>
+
+  <div class="film-grid" id="film-grid">
+
+    <div class="film-card" data-cat="producing"
+         data-title="Untitled Short Film I"
+         data-role="Producer — SCA, USC"
+         data-year="2025"
+         data-long="A character study exploring grief and cultural displacement through intimate vérité cinematography. Shot over five days in East LA, the film follows a first-generation immigrant navigating a family home emptied by loss. Developed through USC's School of Cinematic Arts production program."
+         onclick="openFilmModal(this)">
+      <p class="film-card-cat">Producing</p>
+      <h3 class="film-card-title">Untitled Short Film I</h3>
+      <p class="film-card-role">Producer — SCA, USC</p>
+      <p class="film-card-desc">A character study exploring grief and cultural displacement through intimate vérité cinematography.</p>
+      <p class="film-card-year">2025</p>
+      <p class="film-card-more">View Details →</p>
+    </div>
+
+    <div class="film-card" data-cat="producing"
+         data-title="Untitled Short Film II"
+         data-role="Associate Producer — SCA, USC"
+         data-year="2024"
+         data-long="A darkly comedic narrative confronting identity, obsession, and the performance of self in digital spaces. The film blends satirical absurdism with genuine emotional weight, shot in a single apartment location over three days. Selected for internal SCA showcase."
+         onclick="openFilmModal(this)">
+      <p class="film-card-cat">Producing</p>
+      <h3 class="film-card-title">Untitled Short Film II</h3>
+      <p class="film-card-role">Associate Producer — SCA, USC</p>
+      <p class="film-card-desc">A darkly comedic narrative confronting identity, obsession, and the performance of self in digital spaces.</p>
+      <p class="film-card-year">2024</p>
+      <p class="film-card-more">View Details →</p>
+    </div>
+
+    <div class="film-card" data-cat="acting"
+         data-title="Theatre Production"
+         data-role="Lead Actor — London"
+         data-year="2023"
+         data-long="Stage performance exploring power dynamics and feminine agency through a reimagined classical text. Performed at a fringe theatre in East London to sold-out audiences over two weeks. Directed by a RADA-trained director; script adapted from a 17th-century source with contemporary interpolations."
+         onclick="openFilmModal(this)">
+      <p class="film-card-cat">Acting</p>
+      <h3 class="film-card-title">Theatre Production</h3>
+      <p class="film-card-role">Lead Actor — London</p>
+      <p class="film-card-desc">Stage performance exploring power dynamics and feminine agency through a reimagined classical text.</p>
+      <p class="film-card-year">2023</p>
+      <p class="film-card-more">View Details →</p>
+    </div>
+
+    <div class="film-card" data-cat="acting"
+         data-title="Student Film"
+         data-role="Lead — SCA, USC"
+         data-year="2024"
+         data-long="Psychological short in which a young woman must reconcile inherited memory with present-day violence. A demanding single-location performance piece requiring sustained emotional intensity across a 12-page script. Nominated for Best Performance at SCA student screenings."
+         onclick="openFilmModal(this)">
+      <p class="film-card-cat">Acting</p>
+      <h3 class="film-card-title">Student Film</h3>
+      <p class="film-card-role">Lead — SCA, USC</p>
+      <p class="film-card-desc">Psychological short in which a young woman must reconcile inherited memory with present-day violence.</p>
+      <p class="film-card-year">2024</p>
+      <p class="film-card-more">View Details →</p>
+    </div>
+
+    <div class="film-card" data-cat="writing"
+         data-title="Original Screenplay"
+         data-role="Writer"
+         data-year="In Development"
+         data-long="A feature-length drama set across three cities and two decades, tracing the invisible threads between estranged sisters. The script draws on themes of diaspora, inheritance, and the body as archive of trauma. Currently in second-draft development with workshop readings planned for late 2025."
+         onclick="openFilmModal(this)">
+      <p class="film-card-cat">Writing</p>
+      <h3 class="film-card-title">Original Screenplay</h3>
+      <p class="film-card-role">Writer</p>
+      <p class="film-card-desc">A feature-length drama set across three cities and two decades, tracing the invisible threads between estranged sisters.</p>
+      <p class="film-card-year">In Development</p>
+      <p class="film-card-more">View Details →</p>
+    </div>
+
+    <div class="film-card" data-cat="writing"
+         data-title="Short Script"
+         data-role="Writer — SCA, USC"
+         data-year="2025"
+         data-long="A nine-minute script exploring the moment before departure — when a choice remains unmade and a life hangs suspended. Written for USC's advanced screenwriting seminar. The script received a table read with professional actors and was praised for its compression and precision of image."
+         onclick="openFilmModal(this)">
+      <p class="film-card-cat">Writing</p>
+      <h3 class="film-card-title">Short Script</h3>
+      <p class="film-card-role">Writer — SCA, USC</p>
+      <p class="film-card-desc">A nine-minute script exploring the moment before departure — when a choice remains unmade and a life hangs suspended.</p>
+      <p class="film-card-year">2025</p>
+      <p class="film-card-more">View Details →</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/rebecca.llopis/" target="_blank">Instagram</a>
+      <a href="https://www.linkedin.com/in/rebecca-llopis/" target="_blank">LinkedIn</a>
+      <a href="mailto:rebeccaterezallopis@gmail.com">Email</a>
+      <a href="tel:+12135074264">+1 (213) 507-4264</a>
+    </div>
+    <span class="footer-copy">© 2026 Rebecca Llopis</span>
+  </footer>
+</section>
+
+<!-- ─── FILM MODAL ─── -->
+<div class="film-modal-overlay" id="film-modal-overlay" onclick="closeFilmModal(event)">
+  <div class="film-modal" id="film-modal">
+    <span class="film-modal-close" onclick="closeFilmModal(null, true)">×</span>
+    <p class="film-modal-cat" id="modal-cat"></p>
+    <h2 class="film-modal-title" id="modal-title"></h2>
+    <p class="film-modal-role" id="modal-role"></p>
+    <div class="film-modal-divider"></div>
+    <p class="film-modal-body" id="modal-body"></p>
+    <div class="film-modal-meta">
+      <div class="film-modal-meta-item">
+        <p class="film-modal-meta-label">Year</p>
+        <p class="film-modal-meta-value" id="modal-year"></p>
+      </div>
+      <div class="film-modal-meta-item">
+        <p class="film-modal-meta-label">Category</p>
+        <p class="film-modal-meta-value" id="modal-cat2"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     BLOG PAGE
+═══════════════════════════════════════ -->
+<section id="blog" class="page">
+  <div class="blog-header">
+    <p class="page-label">Writing &amp; Thought</p>
+    <h1 class="page-title">Blog</h1>
+  </div>
+
+  <div class="blog-intro">
+    <p>
+      I write about film, philosophy, and the intersection of art and lived experience —
+      exploring what it means to tell truthful stories in an age of performance.
+      Essays, reflections, and provocations, published on Substack.
+    </p>
+    <div class="divider"></div>
+    <a href="https://substack.com/@rll4444" class="substack-cta" target="_blank">
+      Read on Substack &nbsp;→
+    </a>
+  </div>
+
+  <div class="blog-posts">
+    <p class="about-section-title" style="margin-bottom:0">Recent Essays</p>
+
+    <a href="https://substack.com/@rll4444" class="blog-post-item reveal" target="_blank">
+      <span class="blog-post-num">01</span>
+      <div>
+        <p class="blog-post-title">On the Ethics of Representation in Contemporary Cinema</p>
+        <p class="blog-post-excerpt">Who has the right to tell a story? And what responsibility do we carry when we choose to look?</p>
+        <span class="blog-post-tag">Film Theory</span>
+      </div>
+      <span class="blog-post-arrow">→</span>
+    </a>
+
+    <a href="https://substack.com/@rll4444" class="blog-post-item reveal reveal-delay-1" target="_blank">
+      <span class="blog-post-num">02</span>
+      <div>
+        <p class="blog-post-title">The Actor as Philosopher: Embodiment and the Problem of the Self</p>
+        <p class="blog-post-excerpt">What does it mean to fully inhabit another consciousness — and what does it reveal about your own?</p>
+        <span class="blog-post-tag">Philosophy</span>
+      </div>
+      <span class="blog-post-arrow">→</span>
+    </a>
+
+    <a href="https://substack.com/@rll4444" class="blog-post-item reveal reveal-delay-2" target="_blank">
+      <span class="blog-post-num">03</span>
+      <div>
+        <p class="blog-post-title">Notes from Cannes: What Film Festivals Get Wrong</p>
+        <p class="blog-post-excerpt">Growing up in the shadow of the world's most famous film festival teaches you what cinema costs — and who pays it.</p>
+        <span class="blog-post-tag">Personal</span>
+      </div>
+      <span class="blog-post-arrow">→</span>
+    </a>
+
+    <a href="https://substack.com/@rll4444" class="blog-post-item reveal reveal-delay-3" target="_blank">
+      <span class="blog-post-num">04</span>
+      <div>
+        <p class="blog-post-title">On Being a Woman in Rooms Where Decisions Are Made</p>
+        <p class="blog-post-excerpt">The production room, the audition room, the boardroom. A meditation on presence, power, and taking up space.</p>
+        <span class="blog-post-tag">Industry</span>
+      </div>
+      <span class="blog-post-arrow">→</span>
+    </a>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/rebecca.llopis/" target="_blank">Instagram</a>
+      <a href="https://www.linkedin.com/in/rebecca-llopis/" target="_blank">LinkedIn</a>
+      <a href="mailto:rebeccaterezallopis@gmail.com">Email</a>
+      <a href="tel:+12135074264">+1 (213) 507-4264</a>
+    </div>
+    <span class="footer-copy">© 2026 Rebecca Llopis</span>
+  </footer>
+</section>
+
+<!-- ═══════════════════════════════════════
+     MISC PAGE
+═══════════════════════════════════════ -->
+<section id="misc" class="page">
+  <div class="misc-header">
+    <p class="page-label">Beyond Film</p>
+    <h1 class="page-title">Miscellaneous</h1>
+  </div>
+
+  <div class="misc-grid">
+    <div class="misc-card reveal">
+      <span class="misc-card-num">01</span>
+      <p class="misc-card-cat">Photography</p>
+      <h3 class="misc-card-title">Personal Archive</h3>
+      <p class="misc-card-desc">Candid studies of light, texture, and the quiet moments that precede action.</p>
+      <span class="misc-card-link">View Gallery ↓</span>
+    </div>
+    <div class="misc-card reveal reveal-delay-1">
+      <span class="misc-card-num">02</span>
+      <p class="misc-card-cat">Theatre Direction</p>
+      <h3 class="misc-card-title">London Productions</h3>
+      <p class="misc-card-desc">Reimagined classical texts with contemporary sensibility and an emphasis on the actor's embodied intelligence.</p>
+      <span class="misc-card-link">Learn More →</span>
+    </div>
+    <div class="misc-card reveal">
+      <span class="misc-card-num">03</span>
+      <p class="misc-card-cat">Philosophy</p>
+      <h3 class="misc-card-title">Independent Study</h3>
+      <p class="misc-card-desc">Ongoing research into phenomenology, ethics of representation, and the philosophy of art.</p>
+      <span class="misc-card-link">Read Essays →</span>
+    </div>
+    <div class="misc-card reveal reveal-delay-1">
+      <span class="misc-card-num">04</span>
+      <p class="misc-card-cat">Entrepreneurship</p>
+      <h3 class="misc-card-title">Creative Ventures</h3>
+      <p class="misc-card-desc">Building bridges between disciplines — connecting artists, storytellers, and thinkers to develop work that transcends any single medium.</p>
+      <span class="misc-card-link">Get In Touch →</span>
+    </div>
+  </div>
+
+  <!-- Photo Gallery -->
+  <div class="gallery-section">
+    <p class="about-section-title">Photography</p>
+    <div class="photo-grid" id="photo-grid">
+      <div class="photo-item" onclick="openLightbox(0)">
+        <img src="images/gallery/01.jpg" alt="I" onerror="this.style.display='none';" />
+        <div class="photo-item-overlay">
+          <span class="photo-item-caption">I</span>
+          <div class="photo-placeholder">
+            <span style="font-size:18px;color:#2a2a2a">◈</span>
+            <span>images/gallery/01.jpg</span>
+          </div>
+        </div>
+      </div>
+      <div class="photo-item" onclick="openLightbox(1)">
+        <img src="images/gallery/02.jpg" alt="II" onerror="this.style.display='none';" />
+        <div class="photo-item-overlay">
+          <span class="photo-item-caption">II</span>
+          <div class="photo-placeholder">
+            <span style="font-size:18px;color:#2a2a2a">◈</span>
+            <span>images/gallery/02.jpg</span>
+          </div>
+        </div>
+      </div>
+      <div class="photo-item" onclick="openLightbox(2)">
+        <img src="images/gallery/03.jpg" alt="III" onerror="this.style.display='none';" />
+        <div class="photo-item-overlay">
+          <span class="photo-item-caption">III</span>
+          <div class="photo-placeholder">
+            <span style="font-size:18px;color:#2a2a2a">◈</span>
+            <span>images/gallery/03.jpg</span>
+          </div>
+        </div>
+      </div>
+      <div class="photo-item" onclick="openLightbox(3)">
+        <img src="images/gallery/04.jpg" alt="IV" onerror="this.style.display='none';" />
+        <div class="photo-item-overlay">
+          <span class="photo-item-caption">IV</span>
+          <div class="photo-placeholder">
+            <span style="font-size:18px;color:#2a2a2a">◈</span>
+            <span>images/gallery/04.jpg</span>
+          </div>
+        </div>
+      </div>
+      <div class="photo-item" onclick="openLightbox(4)">
+        <img src="images/gallery/05.jpg" alt="V" onerror="this.style.display='none';" />
+        <div class="photo-item-overlay">
+          <span class="photo-item-caption">V</span>
+          <div class="photo-placeholder">
+            <span style="font-size:18px;color:#2a2a2a">◈</span>
+            <span>images/gallery/05.jpg</span>
+          </div>
+        </div>
+      </div>
+      <div class="photo-item" onclick="openLightbox(5)">
+        <img src="images/gallery/06.jpg" alt="VI" onerror="this.style.display='none';" />
+        <div class="photo-item-overlay">
+          <span class="photo-item-caption">VI</span>
+          <div class="photo-placeholder">
+            <span style="font-size:18px;color:#2a2a2a">◈</span>
+            <span>images/gallery/06.jpg</span>
+          </div>
+        </div>
+      </div>
+      <div class="photo-item" onclick="openLightbox(6)">
+        <img src="images/gallery/07.jpg" alt="VII" onerror="this.style.display='none';" />
+        <div class="photo-item-overlay">
+          <span class="photo-item-caption">VII</span>
+          <div class="photo-placeholder">
+            <span style="font-size:18px;color:#2a2a2a">◈</span>
+            <span>images/gallery/07.jpg</span>
+          </div>
+        </div>
+      </div>
+      <div class="photo-item" onclick="openLightbox(7)">
+        <img src="images/gallery/08.jpg" alt="VIII" onerror="this.style.display='none';" />
+        <div class="photo-item-overlay">
+          <span class="photo-item-caption">VIII</span>
+          <div class="photo-placeholder">
+            <span style="font-size:18px;color:#2a2a2a">◈</span>
+            <span>images/gallery/08.jpg</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/rebecca.llopis/" target="_blank">Instagram</a>
+      <a href="https://www.linkedin.com/in/rebecca-llopis/" target="_blank">LinkedIn</a>
+      <a href="mailto:rebeccaterezallopis@gmail.com">Email</a>
+      <a href="tel:+12135074264">+1 (213) 507-4264</a>
+    </div>
+    <span class="footer-copy">© 2026 Rebecca Llopis</span>
+  </footer>
+</section>
+
+<!-- ─── LIGHTBOX ─── -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightboxOutside(event)">
+  <span class="lightbox-close" onclick="closeLightbox()">×</span>
+  <span class="lightbox-counter" id="lightbox-counter"></span>
+  <span class="lightbox-prev" onclick="lightboxStep(-1)">‹</span>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+  <span class="lightbox-next" onclick="lightboxStep(1)">›</span>
+  <span class="lightbox-caption" id="lightbox-caption"></span>
+</div>
+
+<!-- ═══════════════════════════════════════
+     CONTACT PAGE
+═══════════════════════════════════════ -->
+<section id="contact" class="page">
+  <div class="contact-header">
+    <p class="page-label">Get In Touch</p>
+    <h1 class="page-title">Contact</h1>
+  </div>
+
+  <div class="contact-body">
+    <div class="contact-left">
+      <p class="contact-intro reveal">
+        Whether you're a collaborator, producer, casting director, or someone who simply wants to talk about film — I'd love to hear from you.
+      </p>
+
+      <div class="contact-channels">
+        <a href="mailto:rebeccaterezallopis@gmail.com" class="contact-channel reveal">
+          <div class="contact-channel-icon">✉</div>
+          <div>
+            <p class="contact-channel-label">Email</p>
+            <p class="contact-channel-value">rebeccaterezallopis@gmail.com</p>
+          </div>
+        </a>
+        <a href="tel:+12135074264" class="contact-channel reveal reveal-delay-1">
+          <div class="contact-channel-icon">✆</div>
+          <div>
+            <p class="contact-channel-label">Phone</p>
+            <p class="contact-channel-value">+1 (213) 507-4264</p>
+          </div>
+        </a>
+        <a href="https://www.instagram.com/rebecca.llopis/" target="_blank" class="contact-channel reveal reveal-delay-2">
+          <div class="contact-channel-icon">◎</div>
+          <div>
+            <p class="contact-channel-label">Instagram</p>
+            <p class="contact-channel-value">@rebecca.llopis</p>
+          </div>
+        </a>
+        <a href="https://www.linkedin.com/in/rebecca-llopis/" target="_blank" class="contact-channel reveal reveal-delay-3">
+          <div class="contact-channel-icon">in</div>
+          <div>
+            <p class="contact-channel-label">LinkedIn</p>
+            <p class="contact-channel-value">rebecca-llopis</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="contact-right reveal">
+      <p class="about-section-title" style="margin-bottom:32px">Send a Message</p>
+      <form class="contact-form" id="contact-form" onsubmit="submitForm(event)">
+        <div class="form-group">
+          <label class="form-label" for="cf-name">Your Name</label>
+          <input class="form-input" type="text" id="cf-name" name="name" placeholder="Jane Smith" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cf-email">Email Address</label>
+          <input class="form-input" type="email" id="cf-email" name="email" placeholder="jane@example.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cf-subject">Subject</label>
+          <input class="form-input" type="text" id="cf-subject" name="subject" placeholder="Collaboration, casting, general enquiry…" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cf-message">Message</label>
+          <textarea class="form-textarea" id="cf-message" name="message" placeholder="Tell me about your project or what's on your mind…" required></textarea>
+        </div>
+        <button class="form-submit" type="submit">Send Message &nbsp;→</button>
+        <div class="form-success" id="form-success">
+          Thank you — I'll be in touch soon.
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/rebecca.llopis/" target="_blank">Instagram</a>
+      <a href="https://www.linkedin.com/in/rebecca-llopis/" target="_blank">LinkedIn</a>
+      <a href="mailto:rebeccaterezallopis@gmail.com">Email</a>
+      <a href="tel:+12135074264">+1 (213) 507-4264</a>
+    </div>
+    <span class="footer-copy">© 2026 Rebecca Llopis</span>
+  </footer>
+</section>
+
+<!-- ─── JAVASCRIPT ─── -->
+<script>
+  // ── Page navigation ──────────────────────────────
+  function navigate(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(pageId);
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(checkReveal, 80);
+    }
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    const navLink = document.getElementById('nav-' + pageId);
+    if (navLink) navLink.classList.add('active');
+    history.pushState(null, '', '#' + pageId);
+  }
+
+  window.addEventListener('popstate', () => {
+    const hash = window.location.hash.replace('#', '') || 'home';
+    navigate(hash);
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash.replace('#', '') || 'home';
+    navigate(hash);
+    checkReveal();
+  });
+
+  document.querySelectorAll('.nav-links a, .nav-logo').forEach(el => {
+    el.addEventListener('click', e => e.preventDefault());
+  });
+
+  // ── Mobile menu ────────────────────────────────────
+  function toggleMenu() {
+    const burger = document.getElementById('burger');
+    const menu   = document.getElementById('mobile-menu');
+    const isOpen = burger.classList.toggle('open');
+    if (isOpen) {
+      menu.style.display = 'flex';
+      requestAnimationFrame(() => menu.classList.add('open'));
+      document.body.style.overflow = 'hidden';
+    } else {
+      menu.classList.remove('open');
+      setTimeout(() => { menu.style.display = 'none'; }, 300);
+      document.body.style.overflow = '';
+    }
+  }
+
+  function mobileNavigate(pageId) {
+    toggleMenu();
+    setTimeout(() => navigate(pageId), 250);
+  }
+
+  // ── Film tab filter ───────────────────────────────
+  function filterFilm(cat) {
+    document.querySelectorAll('.film-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.filter === cat);
+    });
+    document.querySelectorAll('.film-card').forEach(card => {
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+    });
+  }
+
+  // ── Film modal ────────────────────────────────────
+  function openFilmModal(card) {
+    const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+    document.getElementById('modal-cat').textContent  = cap(card.dataset.cat);
+    document.getElementById('modal-cat2').textContent = cap(card.dataset.cat);
+    document.getElementById('modal-title').textContent = card.dataset.title;
+    document.getElementById('modal-role').textContent  = card.dataset.role;
+    document.getElementById('modal-year').textContent  = card.dataset.year;
+    document.getElementById('modal-body').textContent  = card.dataset.long;
+    document.getElementById('film-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeFilmModal(event, force) {
+    if (!force && event && document.getElementById('film-modal').contains(event.target)) return;
+    document.getElementById('film-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeFilmModal(null, true);
+      closeLightbox();
+    }
+  });
+
+  // ── Lightbox ──────────────────────────────────────
+  let lightboxIndex = 0;
+  const galleryImages = [
+    { src: 'images/gallery/01.jpg', caption: 'I' },
+    { src: 'images/gallery/02.jpg', caption: 'II' },
+    { src: 'images/gallery/03.jpg', caption: 'III' },
+    { src: 'images/gallery/04.jpg', caption: 'IV' },
+    { src: 'images/gallery/05.jpg', caption: 'V' },
+    { src: 'images/gallery/06.jpg', caption: 'VI' },
+    { src: 'images/gallery/07.jpg', caption: 'VII' },
+    { src: 'images/gallery/08.jpg', caption: 'VIII' },
+  ];
+
+  function openLightbox(index) {
+    lightboxIndex = index;
+    updateLightbox();
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function updateLightbox() {
+    const item = galleryImages[lightboxIndex];
+    document.getElementById('lightbox-img').src = item.src;
+    document.getElementById('lightbox-img').alt = item.caption;
+    document.getElementById('lightbox-caption').textContent = item.caption;
+    document.getElementById('lightbox-counter').textContent = (lightboxIndex + 1) + ' / ' + galleryImages.length;
+  }
+
+  function lightboxStep(dir) {
+    lightboxIndex = (lightboxIndex + dir + galleryImages.length) % galleryImages.length;
+    updateLightbox();
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeLightboxOutside(e) {
+    if (e.target === document.getElementById('lightbox')) closeLightbox();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'ArrowRight') lightboxStep(1);
+    if (e.key === 'ArrowLeft')  lightboxStep(-1);
+  });
+
+  // ── Contact form ──────────────────────────────────
+  function submitForm(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.form-submit');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+    // Replace with your own backend / Formspree / Netlify Forms endpoint
+    setTimeout(() => {
+      e.target.reset();
+      btn.style.display = 'none';
+      document.getElementById('form-success').style.display = 'block';
+    }, 1200);
+  }
+
+  // ── Scroll reveal ─────────────────────────────────
+  function checkReveal() {
+    const page = document.querySelector('.page.active');
+    if (!page) return;
+    page.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.92) el.classList.add('visible');
+    });
+  }
+  window.addEventListener('scroll', checkReveal, { passive: true });
+
+  // ── Nav scroll tint ───────────────────────────────
+  window.addEventListener('scroll', () => {
+    document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 10);
+  }, { passive: true });
+
+  // ── Hero parallax ─────────────────────────────────
+  const heroImg = document.querySelector('.home-hero-img');
+  if (heroImg) {
+    window.addEventListener('scroll', () => {
+      if (!document.getElementById('home').classList.contains('active')) return;
+      heroImg.style.transform = `translateY(${window.scrollY * 0.3}px)`;
+    }, { passive: true });
+  }
+</script>
+</body>
+</html>
