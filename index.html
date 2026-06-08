@@ -570,6 +570,94 @@
       font-style: italic; color: var(--gold);
     }
 
+    /* ─── PHOTOSHOOTS GALLERY ─── */
+    .photoshoot-gallery { padding: 2px; }
+    .photoshoot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 2px;
+    }
+    .photoshoot-item {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      background: #111;
+      aspect-ratio: 2/3;
+    }
+    .photoshoot-item--wide {
+      aspect-ratio: 3/2;
+    }
+    /* last 2 items span the full bottom row as wide */
+    .photoshoot-item:nth-child(4),
+    .photoshoot-item:nth-child(5) {
+      grid-column: span 1;
+    }
+    .photoshoot-item:nth-child(4) { grid-column: 1 / 3; }
+    .photoshoot-item:nth-child(5) { grid-column: 3 / 4; }
+
+    .photoshoot-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.5s ease, filter 0.4s ease;
+      filter: brightness(0.9);
+      display: block;
+    }
+    .photoshoot-item:hover img { transform: scale(1.04); filter: brightness(1); }
+    .photoshoot-overlay {
+      position: absolute; inset: 0;
+      display: flex; align-items: flex-end; justify-content: flex-end;
+      padding: 16px;
+      background: rgba(8,8,8,0);
+      transition: background 0.3s;
+    }
+    .photoshoot-overlay span {
+      font-size: 18px;
+      color: var(--white);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .photoshoot-item:hover .photoshoot-overlay { background: rgba(8,8,8,0.28); }
+    .photoshoot-item:hover .photoshoot-overlay span { opacity: 1; }
+    .photoshoot-item.ps-missing { display: none; }
+
+    /* ─── PHOTO FULLSCREEN MODAL ─── */
+    .photo-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.96);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    .photo-modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+    .photo-modal-img {
+      max-width: 88vw;
+      max-height: 88vh;
+      object-fit: contain;
+      animation: modalSlide 0.3s ease;
+      user-select: none;
+    }
+    .photo-modal-close {
+      position: absolute; top: 28px; right: 36px;
+      font-size: 28px; color: var(--muted); cursor: pointer; transition: color 0.2s;
+    }
+    .photo-modal-close:hover { color: var(--white); }
+    .photo-modal-prev, .photo-modal-next {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      font-size: 36px; color: rgba(244,242,238,0.4); cursor: pointer;
+      transition: color 0.2s; padding: 20px; user-select: none;
+    }
+    .photo-modal-prev { left: 8px; }
+    .photo-modal-next { right: 8px; }
+    .photo-modal-prev:hover, .photo-modal-next:hover { color: var(--white); }
+    .photo-modal-counter {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      font-size: 11px; letter-spacing: 0.2em; color: #444;
+    }
+
     /* ─── TRANSITIONS ─── */
     .page { animation: fadeIn 0.4s ease forwards; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
@@ -815,7 +903,8 @@
     <div class="film-tab active" data-filter="all"       onclick="filterFilm('all')">All</div>
     <div class="film-tab"        data-filter="producing" onclick="filterFilm('producing')">Producing</div>
     <div class="film-tab"        data-filter="acting"    onclick="filterFilm('acting')">Acting</div>
-    <div class="film-tab"        data-filter="writing"   onclick="filterFilm('writing')">Writing</div>
+    <div class="film-tab"        data-filter="writing"      onclick="filterFilm('writing')">Writing</div>
+    <div class="film-tab"        data-filter="photoshoots"  onclick="filterFilm('photoshoots')">Photoshoots</div>
   </div>
 
   <div class="film-grid" id="film-grid">
@@ -936,6 +1025,32 @@
 
   </div>
 
+  <!-- ── PHOTOSHOOTS GALLERY ── -->
+  <div class="photoshoot-gallery" id="photoshoot-gallery" style="display:none">
+    <div class="photoshoot-grid">
+      <div class="photoshoot-item" onclick="openPhotoModal(0)">
+        <img src="images/photoshoots/ps-01.jpg" alt="Photoshoot 1" onerror="this.parentElement.classList.add('ps-missing')" />
+        <div class="photoshoot-overlay"><span>↗</span></div>
+      </div>
+      <div class="photoshoot-item" onclick="openPhotoModal(1)">
+        <img src="images/photoshoots/ps-02.jpg" alt="Photoshoot 2" onerror="this.parentElement.classList.add('ps-missing')" />
+        <div class="photoshoot-overlay"><span>↗</span></div>
+      </div>
+      <div class="photoshoot-item" onclick="openPhotoModal(2)">
+        <img src="images/photoshoots/ps-03.jpg" alt="Photoshoot 3" onerror="this.parentElement.classList.add('ps-missing')" />
+        <div class="photoshoot-overlay"><span>↗</span></div>
+      </div>
+      <div class="photoshoot-item photoshoot-item--wide" onclick="openPhotoModal(3)">
+        <img src="images/photoshoots/ps-04.jpg" alt="Photoshoot 4" onerror="this.parentElement.classList.add('ps-missing')" />
+        <div class="photoshoot-overlay"><span>↗</span></div>
+      </div>
+      <div class="photoshoot-item photoshoot-item--wide" onclick="openPhotoModal(4)">
+        <img src="images/photoshoots/ps-05.jpg" alt="Photoshoot 5" onerror="this.parentElement.classList.add('ps-missing')" />
+        <div class="photoshoot-overlay"><span>↗</span></div>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="footer-links">
       <a href="https://www.instagram.com/rebecca.llopis/" target="_blank">Instagram</a>
@@ -946,6 +1061,15 @@
     <span class="footer-copy">© 2026 Rebecca Llopis</span>
   </footer>
 </section>
+
+<!-- ─── PHOTO MODAL ─── -->
+<div class="photo-modal-overlay" id="photo-modal-overlay" onclick="closePhotoModalOutside(event)">
+  <span class="photo-modal-close" onclick="closePhotoModal()">×</span>
+  <span class="photo-modal-prev" onclick="photoModalStep(-1)">‹</span>
+  <img class="photo-modal-img" id="photo-modal-img" src="" alt="" />
+  <span class="photo-modal-next" onclick="photoModalStep(1)">›</span>
+  <span class="photo-modal-counter" id="photo-modal-counter"></span>
+</div>
 
 <!-- ─── FILM MODAL ─── -->
 <div class="film-modal-overlay" id="film-modal-overlay" onclick="closeFilmModal(event)">
@@ -1345,10 +1469,57 @@
     document.querySelectorAll('.film-tab').forEach(t => {
       t.classList.toggle('active', t.dataset.filter === cat);
     });
-    document.querySelectorAll('.film-card').forEach(card => {
-      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
-    });
+    const gallery = document.getElementById('photoshoot-gallery');
+    const grid    = document.getElementById('film-grid');
+    if (cat === 'photoshoots') {
+      grid.style.display    = 'none';
+      gallery.style.display = 'block';
+    } else {
+      grid.style.display    = '';
+      gallery.style.display = 'none';
+      document.querySelectorAll('.film-card').forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+      });
+    }
   }
+
+  // ── Photoshoot modal ──────────────────────────────
+  const psImages = [
+    'images/photoshoots/ps-01.jpg',
+    'images/photoshoots/ps-02.jpg',
+    'images/photoshoots/ps-03.jpg',
+    'images/photoshoots/ps-04.jpg',
+    'images/photoshoots/ps-05.jpg',
+  ];
+  let psIndex = 0;
+
+  function openPhotoModal(i) {
+    psIndex = i;
+    updatePhotoModal();
+    document.getElementById('photo-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function updatePhotoModal() {
+    document.getElementById('photo-modal-img').src = psImages[psIndex];
+    document.getElementById('photo-modal-counter').textContent = (psIndex + 1) + ' / ' + psImages.length;
+  }
+  function photoModalStep(dir) {
+    psIndex = (psIndex + dir + psImages.length) % psImages.length;
+    updatePhotoModal();
+  }
+  function closePhotoModal() {
+    document.getElementById('photo-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closePhotoModalOutside(e) {
+    if (e.target === document.getElementById('photo-modal-overlay')) closePhotoModal();
+  }
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('photo-modal-overlay').classList.contains('open')) return;
+    if (e.key === 'ArrowRight') photoModalStep(1);
+    if (e.key === 'ArrowLeft')  photoModalStep(-1);
+    if (e.key === 'Escape')     closePhotoModal();
+  });
 
   // ── Film modal ────────────────────────────────────
   function openFilmModal(card) {
