@@ -906,6 +906,21 @@
   <div class="film-grid" id="film-grid">
 
     <div class="film-card" data-cat="producing"
+         data-title="Breaking"
+         data-role="2nd AC — SCA, USC"
+         data-year="2025"
+         data-long="A celebrated news anchor must uphold her composure live on-air while reporting a fatal campus protest that may have claimed one unthinkable victim: her daughter."
+         data-youtube="mI74LJmBpwU"
+         onclick="openFilmModal(this)">
+      <p class="film-card-cat">Producing</p>
+      <h3 class="film-card-title">Breaking</h3>
+      <p class="film-card-role">2nd AC — SCA, USC</p>
+      <p class="film-card-desc">A celebrated news anchor must uphold her composure live on-air while reporting a fatal campus protest that may have claimed one unthinkable victim: her daughter.</p>
+      <p class="film-card-year">2025</p>
+      <p class="film-card-more">Watch Film →</p>
+    </div>
+
+    <div class="film-card" data-cat="producing"
          data-title="Untitled Short Film I"
          data-role="Producer — SCA, USC"
          data-year="2025"
@@ -1085,6 +1100,13 @@
     <div class="film-modal-divider"></div>
     <div id="modal-video-wrap" style="display:none;margin-bottom:28px;">
       <video id="modal-video" controls style="width:100%;border:1px solid var(--border);background:#000;max-height:360px;"></video>
+    </div>
+    <div id="modal-youtube-wrap" style="display:none;margin-bottom:28px;">
+      <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border:1px solid var(--border);">
+        <iframe id="modal-youtube" src="" frameborder="0" allowfullscreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
+      </div>
     </div>
     <p class="film-modal-body" id="modal-body"></p>
     <div class="film-modal-meta">
@@ -1549,7 +1571,7 @@
     document.getElementById('modal-role').textContent  = card.dataset.role;
     document.getElementById('modal-year').textContent  = card.dataset.year;
     document.getElementById('modal-body').textContent  = card.dataset.long;
-    // Video support
+    // Local video
     const videoWrap = document.getElementById('modal-video-wrap');
     const video     = document.getElementById('modal-video');
     if (card.dataset.video) {
@@ -1559,16 +1581,27 @@
       video.src = '';
       videoWrap.style.display = 'none';
     }
+    // YouTube embed
+    const ytWrap = document.getElementById('modal-youtube-wrap');
+    const ytFrame = document.getElementById('modal-youtube');
+    if (card.dataset.youtube) {
+      ytFrame.src = 'https://www.youtube.com/embed/' + card.dataset.youtube + '?rel=0';
+      ytWrap.style.display = 'block';
+    } else {
+      ytFrame.src = '';
+      ytWrap.style.display = 'none';
+    }
     document.getElementById('film-modal-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
   function closeFilmModal(event, force) {
     if (!force && event && document.getElementById('film-modal').contains(event.target)) return;
-    // Pause video on close
+    // Pause/clear on close
     const video = document.getElementById('modal-video');
-    video.pause();
-    video.src = '';
+    video.pause(); video.src = '';
+    document.getElementById('modal-youtube').src = '';
+    document.getElementById('modal-youtube-wrap').style.display = 'none';
     document.getElementById('film-modal-overlay').classList.remove('open');
     document.body.style.overflow = '';
   }
