@@ -304,7 +304,9 @@
     /* ═══════════════════════════════════════
        ABOUT PAGE
     ═══════════════════════════════════════ */
-    .about-header { padding: 72px 48px 48px; border-bottom: 1px solid var(--border); }
+    .about-header { padding: 72px 48px 48px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 48px; }
+    .about-header-text { flex: 1; }
+    .about-header-photo { width: 220px; height: 280px; object-fit: cover; object-position: top center; flex-shrink: 0; }
     .page-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
     .page-title { font-family: 'Playfair Display', serif; font-size: clamp(36px, 5vw, 64px); font-weight: 400; line-height: 1.1; }
 
@@ -672,6 +674,8 @@
       .about-left { padding-right: 0; border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 56px; margin-bottom: 56px; }
       .about-right { padding-left: 0; }
       .about-header, .about-body { padding: 48px 28px 40px; }
+      .about-header { flex-direction: column; align-items: flex-start; gap: 28px; }
+      .about-header-photo { width: 100%; height: 240px; }
       .skills-strip { padding: 48px 28px; }
 
       .film-header, .film-tabs { padding-left: 24px; padding-right: 24px; }
@@ -791,8 +795,11 @@
 ═══════════════════════════════════════ -->
 <section id="about" class="page">
   <div class="about-header">
-    <p class="page-label">About</p>
-    <h1 class="page-title">Rebecca<br/>Llopis</h1>
+    <div class="about-header-text">
+      <p class="page-label">About</p>
+      <h1 class="page-title">Rebecca Llopis</h1>
+    </div>
+    <img class="about-header-photo" src="images/about-portrait.jpg" alt="Rebecca Llopis" />
   </div>
 
   <div class="about-body">
