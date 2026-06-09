@@ -964,15 +964,16 @@
 
 
     <div class="film-card" data-cat="writing"
-         data-title="Original Screenplay"
+         data-title="Finding Sense in the Now"
          data-role="Writer"
          data-year="In Development"
-         data-long="A feature-length drama set across three cities and two decades, tracing the invisible threads between estranged sisters. The script draws on themes of diaspora, inheritance, and the body as archive of trauma. Currently in second-draft development with workshop readings planned for late 2025."
+         data-long="A lonely young woman trapped in the abyss of her thoughts embarks on a sensory quest in search of solace and balance."
+         data-pdf="resume/finding-sense-in-the-now.pdf"
          onclick="openFilmModal(this)">
       <p class="film-card-cat">Writing</p>
-      <h3 class="film-card-title">Original Screenplay</h3>
+      <h3 class="film-card-title">Finding Sense in the Now</h3>
       <p class="film-card-role">Writer</p>
-      <p class="film-card-desc">A feature-length drama set across three cities and two decades, tracing the invisible threads between estranged sisters.</p>
+      <p class="film-card-desc">A lonely young woman trapped in the abyss of her thoughts embarks on a sensory quest in search of solace and balance.</p>
       <p class="film-card-year">In Development</p>
       <p class="film-card-more">View Details →</p>
     </div>
@@ -1066,6 +1067,9 @@
       </div>
     </div>
     <p class="film-modal-body" id="modal-body"></p>
+    <div id="modal-pdf-wrap" style="display:none;margin-top:24px;">
+      <a id="modal-pdf-link" href="" target="_blank" style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold);padding-bottom:2px;">Read Screenplay →</a>
+    </div>
     <div class="film-modal-meta">
       <div class="film-modal-meta-item">
         <p class="film-modal-meta-label">Year</p>
@@ -1503,6 +1507,16 @@
     } else {
       ytFrame.src = '';
       ytWrap.style.display = 'none';
+    }
+    // PDF link
+    const pdfWrap = document.getElementById('modal-pdf-wrap');
+    const pdfLink = document.getElementById('modal-pdf-link');
+    if (card.dataset.pdf) {
+      pdfLink.href = card.dataset.pdf;
+      pdfWrap.style.display = 'block';
+    } else {
+      pdfLink.href = '';
+      pdfWrap.style.display = 'none';
     }
     document.getElementById('film-modal-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
